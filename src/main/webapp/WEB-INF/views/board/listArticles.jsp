@@ -8,5 +8,6 @@
 </head>
 <body>
 <h1>게시글 목록</h1>
+${listArticles}
 </body>
 </html>
