@@ -1,13 +1,41 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<title>Insert title here</title>
-</head>
-<body>
+<%@ include file="../layout/header.jsp" %>
 <h1>게시글 목록</h1>
 ${listArticles}
-</body>
-</html>
+
+<table class="table">
+	<tr>
+		<th>번호</th>
+		<th>제목</th>
+		<th>작성자</th>
+		<th>작성일</th>
+	</tr>
+	<c:choose>
+		<c:when test="${empty listArticles}">
+			<tr><td colspan="4"><p>등록된 글이 없습니다.</p></td></tr>
+		</c:when>
+		<c:otherwise>
+		<c:forEach items="${listArticles}" var="b">
+		<tr>
+			<td>${b.articleNO}</td>
+
+			<c:choose>
+				<c:when test="${b.level > 1}">
+					<td style="padding-left:${40*(b.level-1)}px">[답변:]${b.title}</td> 
+				</c:when>
+				<c:otherwise>
+					<td>${b.title}</td>
+				</c:otherwise>
+			</c:choose>
+
+			<td>${b.id}</td>
+			<td>
+				<fmt:formatDate value="${b.writeDate }" pattern="yyyy년MM월dd일"/>
+			</td>
+		</tr>
+		</c:forEach>
+		</c:otherwise>
+	</c:choose>
+</table>
+<%@ include file="../layout/footer.jsp" %>
