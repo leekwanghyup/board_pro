@@ -17,4 +17,8 @@ public class BoardService {
 		List<ArticleVO> articlesList = dao.selectAllArticles();
 		return articlesList;
 	}
+	
+	public void addArticle(ArticleVO article){
+		dao.insertNewArticle(article);		
+	}
 }

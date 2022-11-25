@@ -1,9 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ include file="../layout/header.jsp" %>
+<div class="container">
 <h1>게시글 목록</h1>
-${listArticles}
-
 <table class="table">
 	<tr>
 		<th>번호</th>
@@ -38,4 +37,5 @@ ${listArticles}
 		</c:otherwise>
 	</c:choose>
 </table>
+</div>
 <%@ include file="../layout/footer.jsp" %>

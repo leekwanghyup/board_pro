@@ -43,7 +43,11 @@ public class BoardController extends HttpServlet {
 			List<ArticleVO> listArticles = service.listArticles();
 			request.setAttribute("listArticles", listArticles);
 			nextPage = "listArticles";
-		} else { // 존재하지 않는 페이지
+		} else if(pathInfo.equals("/articleForm")) {
+			nextPage = "articleForm";
+		}
+		
+		else { // 존재하지 않는 페이지
 			System.out.println("존재하지 않는 페이지");
 			return; 
 		}

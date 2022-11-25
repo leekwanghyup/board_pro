@@ -52,5 +52,42 @@ public class BoardDAO {
 		}
 		return articlesList;
 	}
+	
+	// 새로운 게시글 번호 생성 
+	private int getNewArticleNO() {
+		int newArticleNumber = 0; 
+		String query = "SELECT  max(articleNO) as newNo from t_board";
+		try (
+			Connection conn = dataSource.getConnection();
+			PreparedStatement pstmt = conn.prepareStatement(query);
+			ResultSet rs = pstmt.executeQuery();
+		){
+			if(rs.next()) newArticleNumber = rs.getInt("newNo")+1;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return newArticleNumber;
+	}
+	
+	// 새로운 글 작성 
+	public void insertNewArticle(ArticleVO article) {
+		String query = "INSERT INTO t_board (articleNO, parentNO, title, content, imageFileName, id)";
+		query +=  "VALUES (?, ? ,?, ?, ?, ?)";
+		try (
+			Connection conn = dataSource.getConnection();
+			PreparedStatement pstmt = conn.prepareStatement(query);
+		){
+			pstmt.setInt(1, getNewArticleNO());
+			pstmt.setInt(2, article.getParentNO());
+			pstmt.setString(3, article.getTitle());
+			pstmt.setString(4, article.getContent());
+			pstmt.setString(5, article.getImageFileName());
+			pstmt.setString(6, article.getId());
+			pstmt.executeUpdate();
+		} catch (Exception e) {
+				e.printStackTrace();
+		}
+	}
+	
 }
 
