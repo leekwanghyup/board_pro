@@ -7,8 +7,14 @@ function readURL(input){
 		let reader = new FileReader();  // 파일 읽기 객체
 		reader.onload = function(e){ // 파일을 읽으면 이벤트 발생
 			let srcValue = e.target.result;
-			let imgTag = "<img src='"+srcValue+"'>";
-			$('#preview').html(imgTag);
+			if(srcValue.startsWith("data:image/")){
+				let imgTag = "<img src='"+srcValue+"'>";
+				$('#preview').html(imgTag);	
+			} else {
+				alert('이미지만 등록하세요');
+				$('#imageFileName').val('');
+				$('#preview').html('');
+			}
 		}
 		reader.readAsDataURL(input.files[0]); // 파일 읽기 메서드 호출
 	}
@@ -18,7 +24,7 @@ function readURL(input){
 	<div class="jumbotron">
 		<h1>새로운 글쓰기</h1>
 	</div>
-	<form  method="post" action="${contextPath}/board/addArticle.do" enctype="multipart/form-data">
+	<form  method="post" action="${contextPath}/board/addArticle" enctype="multipart/form-data">
 		<div class="form-group">
 			<label for="title">제목:</label>
 			<input type="text" class="form-control" id="title" name="title">
