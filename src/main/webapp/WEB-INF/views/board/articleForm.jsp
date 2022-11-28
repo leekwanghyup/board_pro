@@ -24,7 +24,7 @@ function readURL(input){
 	<div class="jumbotron">
 		<h1>새로운 글쓰기</h1>
 	</div>
-	<form  method="post" action="${contextPath}/board/addArticle" enctype="multipart/form-data">
+	<form  method="post" action="${contextPath}/board/addArticle" enctype="multipart/form-data" method="post">
 		<div class="form-group">
 			<label for="title">제목:</label>
 			<input type="text" class="form-control" id="title" name="title">

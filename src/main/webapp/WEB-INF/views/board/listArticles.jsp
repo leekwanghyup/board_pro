@@ -18,16 +18,18 @@
 		<c:forEach items="${listArticles}" var="b">
 		<tr>
 			<td>${b.articleNO}</td>
-
 			<c:choose>
 				<c:when test="${b.level > 1}">
-					<td style="padding-left:${40*(b.level-1)}px">[답변:]${b.title}</td> 
+					<td style="padding-left:${40*(b.level-1)}px">
+						<a href="${contextPath}/board/viewArticle?articleNO=${b.articleNO}">[답변:]${b.title}</a>
+					</td> 
 				</c:when>
 				<c:otherwise>
-					<td>${b.title}</td>
+					<td>
+						<a href="${contextPath}/board/viewArticle?articleNO=${b.articleNO}">${b.title}</a>
+					</td>
 				</c:otherwise>
 			</c:choose>
-
 			<td>${b.id}</td>
 			<td>
 				<fmt:formatDate value="${b.writeDate }" pattern="yyyy년MM월dd일"/>

@@ -1,5 +1,6 @@
 package com.dao;
 
+import java.net.URLEncoder;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -70,14 +71,15 @@ public class BoardDAO {
 	}
 	
 	// 새로운 글 작성 
-	public void insertNewArticle(ArticleVO article) {
+	public int insertNewArticle(ArticleVO article) {
 		String query = "INSERT INTO t_board (articleNO, parentNO, title, content, imageFileName, id)";
 		query +=  "VALUES (?, ? ,?, ?, ?, ?)";
+		int articleNo = getNewArticleNO();
 		try (
 			Connection conn = dataSource.getConnection();
 			PreparedStatement pstmt = conn.prepareStatement(query);
 		){
-			pstmt.setInt(1, getNewArticleNO());
+			pstmt.setInt(1, articleNo);
 			pstmt.setInt(2, article.getParentNO());
 			pstmt.setString(3, article.getTitle());
 			pstmt.setString(4, article.getContent());
@@ -87,7 +89,73 @@ public class BoardDAO {
 		} catch (Exception e) {
 				e.printStackTrace();
 		}
+		return articleNo;
 	}
 	
+	// 글 상세 
+	public ArticleVO selectArticle(int articleNO){
+		String query ="select articleNO, parentNO, title, content, imageFileName, id, writeDate from t_board where articleNO=?";
+		ArticleVO article = new ArticleVO();
+		try (
+			Connection conn = dataSource.getConnection();
+			PreparedStatement pstmt = conn.prepareStatement(query);
+		){
+			pstmt.setInt(1, articleNO);
+			try(ResultSet rs=pstmt.executeQuery()){
+				if(rs.next()) {
+					int _articleNO =rs.getInt("articleNO");
+					int parentNO=rs.getInt("parentNO");
+					String title = rs.getString("title");
+					String content =rs.getString("content");
+					String imageFileName = null; 
+					if(rs.getString("imageFileName")!=null) {
+						imageFileName = URLEncoder.encode(rs.getString("imageFileName"), "UTF-8");
+					}
+					String id = rs.getString("id");
+					Date writeDate = rs.getDate("writeDate");
+					article.setArticleNO(_articleNO);
+					article.setParentNO (parentNO);
+					article.setTitle(title);
+					article.setContent(content);
+					article.setImageFileName(imageFileName);
+					article.setId(id);
+					article.setWriteDate(writeDate);
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return article; 
+	}
+	
+	// 글 수정 
+	public void updateArticle(ArticleVO article) {
+		int articleNO = article.getArticleNO();
+		String imageFileName = article.getImageFileName();
+		
+		// 이미지 파일 여부에 따른 동적쿼리 생성
+		String query = "update t_board  set title=?,content=?";
+		if (imageFileName!=null && imageFileName.length()!= 0) {
+			query += ",imageFileName=?";
+		}
+		query += " where articleNO=?";
+		
+		try (
+			Connection conn = dataSource.getConnection();				
+			PreparedStatement pstmt = conn.prepareStatement(query);
+		){
+			pstmt.setString(1, article.getTitle());
+			pstmt.setString(2, article.getContent());
+			if (imageFileName != null && imageFileName.length() != 0) {
+				pstmt.setString(3, imageFileName);
+				pstmt.setInt(4, articleNO);
+			} else {
+				pstmt.setInt(3, articleNO);
+			}
+			pstmt.executeUpdate();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 }
 
