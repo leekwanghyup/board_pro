@@ -29,4 +29,11 @@ public class BoardService {
 	public void modArticle(ArticleVO article) {
 		dao.updateArticle(article);
 	}
+
+	public List<Integer> removeArticle(int articleNO) {
+		// 순서에 주의 : deleteArticle()메서드를 먼저 실행하면  articleNOList를 구할 수 없다. 
+		List<Integer> articleNOList = dao.selectRemovedArticles(articleNO);
+		dao.deleteArticle(articleNO); // 글 삭제 
+		return articleNOList;
+	}
 }

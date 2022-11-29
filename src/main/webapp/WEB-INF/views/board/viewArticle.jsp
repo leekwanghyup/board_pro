@@ -27,7 +27,6 @@ function readURL(input){
     <h2 class="text-center">게시글 보기</h2>
     <form id="viewForm" action="${contextPath}/board/modArticle" enctype="multipart/form-data" method="post">
     	<input type="hidden" value="${article.articleNO}" name="articleNO">
-    	
 		<table class="table">
 		    <tr>
 		        <th class="success">글번호</th>
@@ -73,7 +72,7 @@ function readURL(input){
 		    <tr>
 		        <td colspan="4" class="text-center">
 		            <button type="button" class="btn btn-warning toModForm">수정</button>
-		            <button type="button" class="btn btn-danger">삭제</button>
+		            <button type="button" class="btn btn-danger delArticle">삭제</button>
 		            <button type="button" class="btn btn-secondary listArticles">목록</button>
 		        </td>
 		    </tr>
@@ -87,8 +86,8 @@ function readURL(input){
 	</form>
 </div>
 <script>
-let viewForm = $('#viewForm');
-let originImg = $('.originImg').clone();
+let viewForm = $('#viewForm'); // 입력폼
+let originImg = $('.originImg').clone(); // 수정전 이미지 복사
 
 $('.toModForm').on('click',function(){ // 수정폼으로 변경
 	$("input[name='title']").attr("readonly",false); // 제목입력폼 수정가능
@@ -108,10 +107,16 @@ $('.backViewForm').on('click',function(){ // 뷰폼으로 변경
 	$(this).closest('tr').prev().show(); // 뷰모드 보이기
 });
 
-$('.listArticles').on('click',function(){
+$('.listArticles').on('click',function(){ // 목록으로 
 	viewForm.attr("action","${contextPath}/board/listArticles")
 	viewForm.empty();
 	viewForm.submit();
 });
+
+$('.delArticle').on('click',function(){
+	viewForm.attr("action","${contextPath}/board/removeArticle");
+	viewForm.submit();
+});
+
 </script>
 <%@ include file="../layout/footer.jsp" %>

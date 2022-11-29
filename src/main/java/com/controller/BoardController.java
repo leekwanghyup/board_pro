@@ -25,7 +25,8 @@ import com.service.BoardService;
 @WebServlet("/board/*")
 public class BoardController extends HttpServlet {
 	
-	private static String ARTICLE_IMAGE_REPO = "c:/file_repo";
+	private static final String ARTICLE_IMAGE_REPO = "c:/file_repo";
+	private static final String ENCODING = "utf-8";
 	
 	private BoardService service;
 	
@@ -57,11 +58,11 @@ public class BoardController extends HttpServlet {
 		} else if(pathInfo.equals("/articleForm")) { // 글쓰기 폼
 			nextPage = "articleForm";
 		} else if(pathInfo.equals("/addArticle")) { // 글등록 처리 
-			Map<String, String> articleMap = upload(request, response);
-			String title = articleMap.get("title");
-			String content = articleMap.get("content");
-			String id = articleMap.get("id");
-			String imageFileName = articleMap.get("imageFileName");
+			Map<String, String> multipartRequest = getMultipartRequest(request, response);
+			String title = multipartRequest.get("title");
+			String content = multipartRequest.get("content");
+			String id = multipartRequest.get("id");
+			String imageFileName = multipartRequest.get("imageFileName");
 			ArticleVO vo = ArticleVO.builder().parentNO(0)
 			.id(id).title(title).content(content).imageFileName(imageFileName).build();
 			int articleNO = service.addArticle(vo);
@@ -80,27 +81,40 @@ public class BoardController extends HttpServlet {
 			request.setAttribute("article", articleVO);
 			nextPage = "viewArticle";
 		} else if(pathInfo.equals("/modArticle")) {
-			System.out.println("글 수정 처리");
-			Map<String, String> articleMap = upload(request, response);
-			System.out.println(articleMap);
-			int articleNO = Integer.parseInt(articleMap.get("articleNO"));
-			String imageFileName = articleMap.get("imageFileName");
+			Map<String, String> multipartRequest = getMultipartRequest(request, response);
+			int articleNO = Integer.parseInt(multipartRequest.get("articleNO"));
+			String imageFileName = multipartRequest.get("imageFileName");
 			ArticleVO articleVO = ArticleVO.builder()
 					.articleNO(articleNO)
-					.content(articleMap.get("content"))
-					.title(articleMap.get("title"))
-					.imageFileName(articleMap.get("imageFileName")).build();
+					.content(multipartRequest.get("content"))
+					.title(multipartRequest.get("title"))
+					.imageFileName(multipartRequest.get("imageFileName")).build();
 			service.modArticle(articleVO);
 			if (imageFileName != null && imageFileName.length() != 0) {
-				String originalFileName = articleMap.get("originalFileName");
-				System.out.println(originalFileName);
+				String originalFileName = multipartRequest.get("originalFileName");
 				File srcFile = new File(ARTICLE_IMAGE_REPO + "/" + "temp" + "/" + imageFileName);
 				File destDir = new File(ARTICLE_IMAGE_REPO + "/" + articleNO);
 				destDir.mkdirs();
 				FileUtils.moveFileToDirectory(srcFile, destDir, true);
-				File oldFile = new File(ARTICLE_IMAGE_REPO + "/" + articleNO + "/" + URLDecoder.decode(originalFileName, "utf-8")); // 수정 전 파일 경로
-				oldFile.delete(); // 수정 전 파일 삭제
+				if(originalFileName!=null) {
+					File oldFile = new File(ARTICLE_IMAGE_REPO + "/" + articleNO + "/" + URLDecoder.decode(originalFileName, "utf-8")); // 수정 전 파일 경로
+					oldFile.delete(); // 수정 전 파일 삭제
+				}
 			}
+			response.sendRedirect(contextPath+"/board");
+			return; 
+		} else if(pathInfo.equals("/removeArticle")) { // 글 삭제 처리 
+			Map<String,String> multipartRequest = getMultipartRequest(request, response);
+			int articleNO = Integer.parseInt(multipartRequest.get("articleNO"));
+			List<Integer> articleNOList = service.removeArticle(articleNO); // 삭제 대상 글 번호 목록
+			System.out.println("삭제 대상 글 번호 : "+articleNOList);
+			for (int _articleNO : articleNOList) {
+				File dir = new File(ARTICLE_IMAGE_REPO + "/" + _articleNO);
+				System.out.println(dir);
+				if (dir.exists()) {
+					FileUtils.deleteDirectory(dir);
+				}
+			}	
 			response.sendRedirect(contextPath+"/board");
 			return; 
 		}
@@ -113,9 +127,8 @@ public class BoardController extends HttpServlet {
 		rd.forward(request, response);
 	}
 
-	private Map<String, String> upload(HttpServletRequest request, HttpServletResponse response) {
+	private Map<String, String> getMultipartRequest(HttpServletRequest request, HttpServletResponse response) {
 		Map<String, String> articleMap = new HashMap<String, String>();
-		String encoding = "utf-8";
 		File currentDirPath = new File(ARTICLE_IMAGE_REPO);
 		DiskFileItemFactory factory = new DiskFileItemFactory();
 		ServletFileUpload upload = new ServletFileUpload(factory);
@@ -124,8 +137,7 @@ public class BoardController extends HttpServlet {
 			List<FileItem> items = upload.parseRequest(request);
 			for (FileItem fileItem : items) {
 				if (fileItem.isFormField()) {
-					articleMap.put(fileItem.getFieldName(), fileItem.getString(encoding));
-					System.out.println(fileItem.getFieldName());
+					articleMap.put(fileItem.getFieldName(), fileItem.getString(ENCODING));
 				} else { // 요청정보가 파일일 때 
 					if (fileItem.getSize() > 0) {
 						String fileName = fileItem.getName(); // 파일이름

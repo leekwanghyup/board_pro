@@ -157,5 +157,48 @@ public class BoardDAO {
 			e.printStackTrace();
 		}
 	}
+	
+	// 글 삭제 
+	public void deleteArticle(int  articleNO) {
+		String query = "DELETE FROM t_board ";
+		query += " WHERE articleNO in (";
+		query += "  SELECT articleNO FROM  t_board ";
+		query += " START WITH articleNO = ?";
+		query += " CONNECT BY PRIOR  articleNO = parentNO )";
+		try (
+			Connection conn = dataSource.getConnection();	
+			PreparedStatement pstmt = conn.prepareStatement(query);
+		){
+			pstmt.setInt(1, articleNO);
+			pstmt.executeUpdate();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	// 삭제한 글 번호 
+	public List<Integer> selectRemovedArticles(int articleNO) {
+		List<Integer> articleNOList = new ArrayList<Integer>(); // 삭제대상 게시글 번호 목록
+		String query = "SELECT articleNO FROM  t_board";
+		query += " START WITH articleNO = ?";
+		query += " CONNECT BY PRIOR articleNO = parentNO";
+		try (
+			Connection conn = dataSource.getConnection();
+			PreparedStatement pstmt = conn.prepareStatement(query);
+		){
+			pstmt.setInt(1, articleNO);
+			try(ResultSet rs = pstmt.executeQuery();){
+				while (rs.next()) {
+					articleNO = rs.getInt("articleNO");
+					System.out.println("BoadDAO : "+articleNO);
+					articleNOList.add(articleNO);
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return articleNOList;
+	}
+	
 }
 
