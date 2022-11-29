@@ -14,14 +14,15 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 <body>
-<nav class="navbar navbar-expand-sm bg-dark navbar-dark">
+<nav class="navbar navbar-expand-sm bg-dark navbar-dark d-flex justify-content-between">
   <!-- Brand/logo -->
-  <a class="navbar-brand" href="#">Logo</a>
   
-  <!-- Links -->
   <ul class="navbar-nav">
+  	<li class="nav-item">
+  		<a class="navbar-brand" href="#">Logo</a>
+  	</li>
     <li class="nav-item">
-      <a class="nav-link" href="${contextPath}/board">게시판</a>
+      <a class="nav-link" href="${contextPath}/board">자유게시판</a>
     </li>
     <li class="nav-item">
       <a class="nav-link" href="#">Link 2</a>
@@ -29,5 +30,9 @@
     <li class="nav-item">
       <a class="nav-link" href="#">Link 3</a>
     </li>
+  </ul>
+  <ul class="navbar-nav">
+  	  <li class="nav-item"><a class="nav-link" href="${contextPath}/member/joinForm">회원가입</a></li>
+  	  <li class="nav-item"><a class="nav-link" href="#">로그인</a></li>
   </ul>
 </nav>

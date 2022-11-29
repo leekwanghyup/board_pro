@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+
 <%@ include file="../layout/header.jsp" %>
 <script>
 function readURL(input){
@@ -19,6 +20,7 @@ function readURL(input){
 		reader.readAsDataURL(input.files[0]); // 파일 읽기 메서드 호출
 	}
 }
+history.forward();
 </script>
 <div class="container my-4">
 	<div class="jumbotron">
@@ -42,10 +44,18 @@ function readURL(input){
 			<input type="file" class="form-control" id="imageFileName" name="imageFileName" onchange="readURL(this)">
 		</div>
 		<div class="form-group" id="preview"></div>
-		<button class="btn btn-primary">글쓰기</button>
+		<button type="button" class="btn btn-primary addArticle">글쓰기</button>
 		<a href="#" class="btn bt-secondary">목록보기</a>
  	</form>
 </div>
-<%@ include file="../layout/header.jsp" %>
+<%@ include file="../layout/footer.jsp" %>
+<script>
+
+$(function(){
+	$('.addArticle').on('click',function(){
+		$('form').submit();
+	})
+});
+</script>
 
 

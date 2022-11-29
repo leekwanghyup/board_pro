@@ -9,10 +9,11 @@
 		<th>제목</th>
 		<th>작성자</th>
 		<th>작성일</th>
+		<th>조회수</th>
 	</tr>
 	<c:choose>
 		<c:when test="${empty listArticles}">
-			<tr><td colspan="4"><p>등록된 글이 없습니다.</p></td></tr>
+			<tr><td colspan="5"><p>등록된 글이 없습니다.</p></td></tr>
 		</c:when>
 		<c:otherwise>
 		<c:forEach items="${listArticles}" var="b">
@@ -34,6 +35,7 @@
 			<td>
 				<fmt:formatDate value="${b.writeDate }" pattern="yyyy년MM월dd일"/>
 			</td>
+			<td>12455</td>
 		</tr>
 		</c:forEach>
 		</c:otherwise>

@@ -51,11 +51,14 @@ public class BoardController extends HttpServlet {
 		String contextPath = request.getContextPath();
 		String nextPage = null;
 		
-		if(pathInfo==null || pathInfo.equals("/") || pathInfo.equals("/listArticles")) { // 글 목록 
+		// 글 목록
+		if(pathInfo==null || pathInfo.equals("/") || pathInfo.equals("/listArticles")) {  
 			List<ArticleVO> listArticles = service.listArticles();
 			request.setAttribute("listArticles", listArticles);
 			nextPage = "listArticles";
-		} else if(pathInfo.equals("/articleForm")) { // 글쓰기 폼
+		
+		// 글쓰기 폼
+		} else if(pathInfo.equals("/articleForm")) { 
 			nextPage = "articleForm";
 		} else if(pathInfo.equals("/addArticle")) { // 글등록 처리 
 			Map<String, String> multipartRequest = getMultipartRequest(request, response);
@@ -67,6 +70,7 @@ public class BoardController extends HttpServlet {
 			.id(id).title(title).content(content).imageFileName(imageFileName).build();
 			int articleNO = service.addArticle(vo);
 			
+			// 이미지 파일을 업로드 한 경우 
 			if(imageFileName!=null && imageFileName.length()!=0) {
 				File srcFile = new File(ARTICLE_IMAGE_REPO+"/temp/"+imageFileName);
 				File destDir = new File(ARTICLE_IMAGE_REPO +"/"+articleNO);
@@ -75,12 +79,16 @@ public class BoardController extends HttpServlet {
 			}
 			response.sendRedirect(contextPath+"/board");
 			return;
-		} else if(pathInfo.equals("/viewArticle")) { // 글 상세 보기 
+			
+		// 글 상세 보기
+		} else if(pathInfo.equals("/viewArticle")) {  
 			String articleNO = request.getParameter("articleNO");
 			ArticleVO articleVO = service.viewArticle(Integer.parseInt(articleNO));
 			request.setAttribute("article", articleVO);
 			nextPage = "viewArticle";
-		} else if(pathInfo.equals("/modArticle")) {
+			
+		//글 수정 처리
+		} else if(pathInfo.equals("/modArticle")) {  
 			Map<String, String> multipartRequest = getMultipartRequest(request, response);
 			int articleNO = Integer.parseInt(multipartRequest.get("articleNO"));
 			String imageFileName = multipartRequest.get("imageFileName");
@@ -90,27 +98,29 @@ public class BoardController extends HttpServlet {
 					.title(multipartRequest.get("title"))
 					.imageFileName(multipartRequest.get("imageFileName")).build();
 			service.modArticle(articleVO);
+			// 이미지 파일이 있는 경우 
 			if (imageFileName != null && imageFileName.length() != 0) {
 				String originalFileName = multipartRequest.get("originalFileName");
 				File srcFile = new File(ARTICLE_IMAGE_REPO + "/" + "temp" + "/" + imageFileName);
 				File destDir = new File(ARTICLE_IMAGE_REPO + "/" + articleNO);
 				destDir.mkdirs();
 				FileUtils.moveFileToDirectory(srcFile, destDir, true);
+				// 수정 전 이미지 파일이 있는 경우 
 				if(originalFileName!=null) {
 					File oldFile = new File(ARTICLE_IMAGE_REPO + "/" + articleNO + "/" + URLDecoder.decode(originalFileName, "utf-8")); // 수정 전 파일 경로
 					oldFile.delete(); // 수정 전 파일 삭제
 				}
 			}
 			response.sendRedirect(contextPath+"/board");
-			return; 
-		} else if(pathInfo.equals("/removeArticle")) { // 글 삭제 처리 
+			return;
+			
+		// 글 삭제 처리
+		} else if(pathInfo.equals("/removeArticle")) {  
 			Map<String,String> multipartRequest = getMultipartRequest(request, response);
 			int articleNO = Integer.parseInt(multipartRequest.get("articleNO"));
 			List<Integer> articleNOList = service.removeArticle(articleNO); // 삭제 대상 글 번호 목록
-			System.out.println("삭제 대상 글 번호 : "+articleNOList);
 			for (int _articleNO : articleNOList) {
 				File dir = new File(ARTICLE_IMAGE_REPO + "/" + _articleNO);
-				System.out.println(dir);
 				if (dir.exists()) {
 					FileUtils.deleteDirectory(dir);
 				}
@@ -119,7 +129,8 @@ public class BoardController extends HttpServlet {
 			return; 
 		}
 		
-		else { // 존재하지 않는 페이지
+		// 존재하지 않는 페이지
+		else { 
 			System.out.println("존재하지 않는 페이지");
 			return; 
 		}

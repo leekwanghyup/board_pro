@@ -8,23 +8,16 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.naming.Context;
-import javax.naming.InitialContext;
 import javax.sql.DataSource;
 
+import com.common.ConnectionUtil;
 import com.domain.ArticleVO;
 
 public class BoardDAO {
 	private DataSource dataSource;
 
 	public BoardDAO() {
-		try {
-			Context ctx = new InitialContext();
-			Context envContext = (Context) ctx.lookup("java:/comp/env");
-			dataSource = (DataSource) envContext.lookup("jdbc/oracle");
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		dataSource = ConnectionUtil.getDataSource();
 	}
 
 	public List<ArticleVO> selectAllArticles() {

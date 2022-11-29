@@ -22,6 +22,7 @@ function readURL(input){
 		reader.readAsDataURL(input.files[0]); // 파일 읽기 메서드 호출
 	}
 }
+history.forward();
 </script>
 <div class="container my-3">
     <h2 class="text-center">게시글 보기</h2>
@@ -78,7 +79,7 @@ function readURL(input){
 		    </tr>
 		    <tr class="viewMode">
 		        <td colspan="4" class="text-center">
-		            <button class="btn btn-warning modProcedd">수정하기</button>
+		            <button type="button" class="btn btn-warning modProcedd">수정하기</button>
 		            <button type="button" class="btn btn-secondary backViewForm" >취소</button>
 		        </td>
 		    </tr>
@@ -112,6 +113,11 @@ $('.listArticles').on('click',function(){ // 목록으로
 	viewForm.empty();
 	viewForm.submit();
 });
+
+$('.modProcedd').on('click',function(){
+	viewForm.attr("action","${contextPath}/board/modArticle");
+	viewForm.submit();
+})
 
 $('.delArticle').on('click',function(){
 	viewForm.attr("action","${contextPath}/board/removeArticle");
