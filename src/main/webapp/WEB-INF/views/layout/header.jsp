@@ -3,6 +3,9 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <c:set var="contextPath" value="${pageContext.request.contextPath}"/>
+<c:if test="${not empty sessionScope.auth}">
+	<c:set var="loginedMember" value="${auth.loginId}"/>
+</c:if>
 <!DOCTYPE html>
 <html>
 <head>
@@ -14,6 +17,9 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 <body>
+<c:if test="${not empty loginedMember}">
+	${loginedMember}님 로그인 중 .....
+</c:if>
 <nav class="navbar navbar-expand-sm bg-dark navbar-dark d-flex justify-content-between">
   <!-- Brand/logo -->
   
@@ -33,6 +39,6 @@
   </ul>
   <ul class="navbar-nav">
   	  <li class="nav-item"><a class="nav-link" href="${contextPath}/member/joinForm">회원가입</a></li>
-  	  <li class="nav-item"><a class="nav-link" href="#">로그인</a></li>
+  	  <li class="nav-item"><a class="nav-link" href="${contextPath}/member/loginForm">로그인</a></li>
   </ul>
 </nav>

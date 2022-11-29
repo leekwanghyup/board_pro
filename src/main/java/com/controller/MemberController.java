@@ -9,8 +9,10 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import com.dao.MemberDAO;
+import com.domain.AuthVO;
 import com.domain.MemberVO;
 import com.service.MemberService;
 
@@ -42,7 +44,7 @@ public class MemberController extends HttpServlet{
 		String pathInfo = request.getPathInfo();
 		String contextPath = request.getContextPath();
 		String nextPage = null;
-		
+		HttpSession session = null; 
 
 		// 회원가입 폼
 		if(pathInfo.equals("/joinForm")) { 
@@ -65,8 +67,25 @@ public class MemberController extends HttpServlet{
 		// 나의 정보 보기
 		else if(pathInfo.equals("/myPage")) {
 			
+		} else if(pathInfo.equals("/loginForm")) {
+			nextPage = "loginForm";
 		}
-		
+			
+		else if(pathInfo.equals("/login")) {
+			System.out.println("MemberController.login : 로그인 처리");
+			String userId = request.getParameter("userId");
+			String userPwd = (String) request.getAttribute("userPwd");
+			MemberVO vo = MemberVO.builder().id(userId).pwd(userPwd).build();
+			if(service.loginService(vo)) {
+				System.out.println("MemberController.login 로그인댐");
+				session = request.getSession();
+				session.setAttribute("auth", new AuthVO(vo.getId()));
+				response.sendRedirect(contextPath+"/");
+			} else {
+				System.out.println("MemberController.login 아이디 또는 비밀번호 맞지 않음");
+			}
+			return; 
+		}
 		else {
 			System.out.println("존재하지 않는 페이지");
 			return; 
@@ -75,8 +94,4 @@ public class MemberController extends HttpServlet{
 		RequestDispatcher rd = request.getRequestDispatcher(PREFIX+nextPage+SUFFIX);
 		rd.forward(request, response);
 	}
-	
-	
-	
-	
 }

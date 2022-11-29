@@ -12,10 +12,14 @@ import javax.servlet.http.HttpFilter;
 import javax.servlet.http.HttpServletRequest;
 
 
-@WebFilter("/member/*")
+@WebFilter(urlPatterns = {
+		"/member/join",
+		"/member/login"
+})
 public class EncryptFilter extends HttpFilter implements Filter {
        
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+		System.out.println("EncryptFilter : 필터 동작");
 		HttpServletRequest httpServletRequest = (HttpServletRequest)request;
 		EncryptWrapper ew = new EncryptWrapper(httpServletRequest);
 		if(request.getParameter("userPwd")!=null) {
