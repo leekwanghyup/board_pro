@@ -37,7 +37,7 @@ history.forward();
 		</div>
 		<div class="form-group">
 			<label for="id">작성자:</label>
-			<input type="text" class="form-control" id="id" name="id" value="hong">
+			<input type="text" class="form-control" id="id" name="id" value="${auth.loginId }" readonly="readonly">
 		</div>
 		<div class="form-group">
 			<label for="imageFileName">첨부파일:</label>

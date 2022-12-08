@@ -72,18 +72,21 @@ public class MemberController extends HttpServlet{
 		}
 			
 		else if(pathInfo.equals("/login")) {
-			System.out.println("MemberController.login : 로그인 처리");
 			String userId = request.getParameter("userId");
 			String userPwd = (String) request.getAttribute("userPwd");
 			MemberVO vo = MemberVO.builder().id(userId).pwd(userPwd).build();
 			if(service.loginService(vo)) {
-				System.out.println("MemberController.login 로그인댐");
 				session = request.getSession();
 				session.setAttribute("auth", new AuthVO(vo.getId()));
 				response.sendRedirect(contextPath+"/");
 			} else {
 				System.out.println("MemberController.login 아이디 또는 비밀번호 맞지 않음");
 			}
+			return; 
+		} else if(pathInfo.equals("/logout")) {
+			session = request.getSession(false);
+			session.removeAttribute("auth");
+			response.sendRedirect(contextPath+"/");
 			return; 
 		}
 		else {
